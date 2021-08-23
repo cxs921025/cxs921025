@@ -1,28 +1,36 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Clock_in
-
-# Controls when the workflow will run
+name: 'GitHub Actions Weather Bot'
+ 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
   schedule:
-   - cron: "*/1 * * * 1-5"
+  # 定时任务，在每天的5点推送天气信息到邮箱
+    - cron: '0 21 * * *'
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  bot:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    # 首先copy git仓库到虚拟机上
+      - name: 'Checkout codes'
+        uses: actions/checkout@v1
+    # 执行仓库中的脚本文件
+      - name: 'Get Weather'
+        run: bash ./weather.sh
+      # 获取格式化的日期并存入GitHub内置的环境变量中
+      - name: 'Get Date'
+        run: echo "REPORT_DATE=$(TZ=':Asia/Shanghai' date '+%Y-%m-%d %T')" >> $GITHUB_ENV
+      # 使用现成的发送邮箱的GitHub action来发送邮件
+      - name: 'Send mail'
+        uses: dawidd6/action-send-mail@main
+        with:
+          # 这些是发送邮件需要配置的参数，更多详细的说明请访问具体的仓库
+          server_address: smtp.qq.com
+          server_port: 465
+          # 这些sectret的环境变量需要配置在setting中的secret下
+          username: 994722376@qq.com
+          password: 9875321sheng//
+          subject: 天气预报
+          body: file://result.html
+          to: 994722376@qq.com
+          from: GitHub Actions
+          content_type: text/html
