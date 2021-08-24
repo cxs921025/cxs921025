@@ -3,7 +3,7 @@ name: 'GitHub Actions Clock In'
 on:
   push:
   schedule:
-    - cron: '03 16 * * *'
+    - cron: '03 18 * * 1-5'
 
 jobs:
   bot:
