@@ -1,7 +1,6 @@
 name: 'GitHub Actions Clock In'
  
 on:
-  push:
   schedule:
     - cron: '56 09 * * 1-5'
 
